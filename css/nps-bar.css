@@ -1,0 +1,112 @@
+.nps-bar {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.nps-bar p {
+  margin-right: 10px;
+}
+
+.nps-bar ul {
+  display: inline-flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nps-bar ul li {
+  margin-right: 10px;
+}
+
+.nps-bar ul li:last-child {
+  margin-right: 0;
+}
+
+.nps-bar a.star {
+  font-size: 20px;
+  color: #d8d8d8;
+}
+
+.nps-bar a.star:hover,
+.nps-bar a.star.active {
+  color: #f39c12;
+}
+
+#nps-form label {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .nps-bar {
+    height: 80px;
+  }
+
+  .nps-bar a.star {
+    font-size: 24px;
+  }
+}
+
+.nps-bar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.nps-label {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.nps-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.nps-button {
+  background-color: transparent;
+  border: none;
+  font-size: 60px;
+  cursor: pointer;
+}
+
+.nps-textarea {
+  display: none;
+  height: 200px;
+  width: 80%;
+  margin-top: 20px;
+  padding: 10px;
+  font-size: 18px;
+  border: 2px solid #ddd;
+}
+
+.nps-submit {
+  display: none;
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 18px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.nps-thankyou {
+  display: none;
+  margin-top: 20px;
+  font-size: 24px;
+  font-weight: bold;
+}
