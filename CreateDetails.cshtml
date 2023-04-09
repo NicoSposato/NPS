@@ -1,4 +1,4 @@
-﻿@model ElegiTusFotos.Models.ProyectoViewModel
+@model ElegiTusFotos.Models.ProyectoViewModel
 @using ElegiTusFotos.Models
 
 @{
@@ -6,7 +6,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@Scripts.Render("~/bundles/jqueryval")
 @Styles.Render("~/Content/blueimp-gallery")
 
 <noscript><link href="@Url.Content("~/Content/css/jquery.fileupload-noscript.css")" rel="stylesheet" type="text/css"></noscript>
@@ -266,6 +265,7 @@
     var totalArchivosSubidos = 0;
 
     $(document).ready(function () {
+		console.log('Documento listo');
         $('select[name=securitySelector]').val($("#ProyectoTipoSeguridadID").val());
         $('.selectpicker').prop('disabled', true);
         $('.selectpicker').selectpicker('refresh');
@@ -274,10 +274,20 @@
         var msj = "Tamaño mínimo recomendable: 1600x1200 (Más de 2MP)";
         mostrarMensaje(msj, "alert alert-info", 0);
     });
+	
+	function getTotalFilesExceeded() {
+    var totalArchivosPermitidos = window.totalFilesLimit;
+    if (totalArchivosSeleccionados + totalArchivosCargados > totalArchivosPermitidos) {
+        return true;
+    }
+    return false;
+	}
 
     function inicializarFileUpload() {
+		console.log('Inicializando FileUpload');
 
         $('#fileupload').bind('fileuploadfail', function (e, data) {
+			console.log('fileuploadfail');
             console.log('Error!');
             errorData = data;
 
@@ -287,6 +297,7 @@
         });
 
         $('#fileupload').bind('fileuploadprocessdone', function (e, data) {
+			console.log('fileuploadprocessdone');
             totalArchivosCargados++;
             $('#fotosProcesadas').text(totalArchivosCargados);
 
@@ -294,16 +305,30 @@
                 $('#btnUpload').attr('disabled', false);
 
         });
+		
+		$('#fileupload').on('custom.fileuploadchange', function (e) {
+			console.log('fileuploadchange');
+			if (getTotalFilesExceeded()) {
+				mostrarCapacidad();
+				e.preventDefault();
+			}
+		});
 
         $('#fileupload').bind('fileuploadchange', function (e, data) {
-            totalArchivosCargados = 0;
-            totalArchivosSeleccionados = data.files.length;
-            $('#procesoFotos').show();
-            $('#cantFotos').text(totalArchivosSeleccionados);
-            $('#btnUpload').attr('disabled', true);
-        });
+			if (getTotalFilesExceeded()) {
+				mostrarCapacidad();
+				e.preventDefault();
+			} else {
+				totalArchivosCargados = 0;
+				totalArchivosSeleccionados = data.files.length;
+				$('#procesoFotos').show();
+				$('#cantFotos').text(totalArchivosSeleccionados);
+				$('#btnUpload').attr('disabled', true);
+			}
+		});
 
         $('#fileupload').bind('fileuploaddone', function (e, data) {
+			console.log('fileuploaddone');
             if (pendingList.length > 0) $('#retryFailed').show();
             else $('#retryFailed').hide();
 
@@ -322,6 +347,7 @@
         });
 
         $('#retryFailed').click(function () {
+			console.log('retryFailed clicked');
             pendingList.forEach(function (data) { data.submit(); });
             pendingList = [];
         });
@@ -329,6 +355,7 @@
 
 
     function mostrarPopup() {
+		console.log('Mostrando Popup correcto');
         swal({
             title: "Procesamos las fotos correctamente",
             text: "¿Que deseas hacer ahora?",
@@ -352,6 +379,7 @@
     }
 
     function mostrarCapacidad() {
+		console.log('Mostrando Capacidad limitada');
         swal({
             title: "Tu plan llegó a su límite",
             text: "¿Deseas obtener mas GB?",
@@ -372,7 +400,9 @@
         });
     }
 
-    var capacidadExcedida = window.capacidadExtendida;
+    var capacidadExcedida = '@Model.CapacidadExtendida' === 'True';
+	console.log('Capacidad excedida:', capacidadExcedida);
+
 
     if (capacidadExcedida == 'True') {
         mostrarCapacidad();
@@ -387,3 +417,4 @@
         }
     }
 </script>
+@Scripts.Render("~/bundles/jqueryval")
