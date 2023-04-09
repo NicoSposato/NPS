@@ -270,7 +270,18 @@
         $('.selectpicker').prop('disabled', true);
         $('.selectpicker').selectpicker('refresh');
 
-        inicializarFileUpload();
+		inicializarFileUpload();
+
+		var capacidadExcedida = '@Model.CapacidadExtendida' === 'True';
+
+		if (capacidadExcedida) {
+			$('#fileupload').bind('fileuploadsubmit', function (e, data) {
+				e.preventDefault();
+				console.log("Capacidad excedida, se cancela la carga de archivos");
+				return false;
+			});
+		}
+		
         var msj = "Tamaño mínimo recomendable: 1600x1200 (Más de 2MP)";
         mostrarMensaje(msj, "alert alert-info", 0);
     });
@@ -348,17 +359,17 @@
 
     function mostrarPopup() {
 		console.log('Mostrando Popup correcto');
-        swal({
-            title: "Procesamos las fotos correctamente",
-            text: "¿Que deseas hacer ahora?",
-            type: "success",
-            showCancelButton: true,
-            showCloseButton: true,
-            confirmButtonText: @Json.Encode(Model.EsSeguridadAlta) ? "Asignar producto" : "Ir a Proyectos",
-            cancelButtonText:  "Nueva galeria",
-            closeOnConfirm: true,
-            closeOnCancel: true
-        }, function (isConfirm) {
+		swal({
+			title: "Procesamos las fotos correctamente",
+			text: "¿Que deseas hacer ahora?",
+			type: "success",
+			showCancelButton: true,
+			showCloseButton: true,
+			confirmButtonText: '@Model.EsSeguridadAlta' === 'True' ? "Asignar producto" : "Ir a Proyectos",
+			cancelButtonText:  "Nueva galeria",
+			closeOnConfirm: true,
+			closeOnCancel: true
+		}, function (isConfirm) {
             if (isConfirm) {
                window.location = @Json.Encode(Model.EsSeguridadAlta) ? window.UrlCreatePedido + '?proyectoID=' + @Model.ProyectoID + '&clienteID=' + @Model.ClienteID
                                   : '@Url.Action("Index", "Proyecto")';
@@ -390,14 +401,6 @@
                 window.location = window.UrlHomeIndex;
             }
         });
-    }
-
-    var capacidadExcedida = '@Model.CapacidadExtendida' === 'True';
-	console.log('Capacidad excedida:', capacidadExcedida);
-
-
-    if (capacidadExcedida == 'True') {
-        mostrarCapacidad();
     }
 
     function mostrarMensaje(msg, cssClass, conFade) {
