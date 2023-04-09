@@ -285,6 +285,9 @@
 
     function inicializarFileUpload() {
 		console.log('Inicializando FileUpload');
+		var capacidadExcedida = false;
+		var espacioUsado = window.espacioUsado;
+		var espacioDisponible = window.espacioDisponible;
 
         $('#fileupload').bind('fileuploadfail', function (e, data) {
 			console.log('fileuploadfail');
@@ -296,15 +299,36 @@
             }
         });
 
-        $('#fileupload').bind('fileuploadprocessdone', function (e, data) {
+		$('#fileupload').bind('fileuploadprocessdone', function (e, data) {
 			console.log('fileuploadprocessdone');
-            totalArchivosCargados++;
-            $('#fotosProcesadas').text(totalArchivosCargados);
+			totalArchivosCargados++;
+			$('#fotosProcesadas').text(totalArchivosCargados);
 
-            if (totalArchivosCargados == totalArchivosSeleccionados)
-                $('#btnUpload').attr('disabled', false);
+			if (espacioUsado + (data.files[0].size / 1024 / 1024) > espacioDisponible) {
+				capacidadExcedida = true;
+				$('#btnUpload').attr('disabled', true);
+				mostrarCapacidad();
+			} else {
+				if (totalArchivosCargados == totalArchivosSeleccionados) {
+					$('#btnUpload').attr('disabled', false);
+				}
+			}
+		});
 
-        });
+		$('#fileupload').bind('fileuploadsubmit', function (e, data) {
+			if (capacidadExcedida) {
+				e.preventDefault();
+			}
+		});
+
+		$('#fileupload').bind('fileuploadsend', function (e, data) {
+			if (capacidadExcedida) {
+				e.preventDefault();
+				return false;
+			}
+		});
+
+
 
         $('#fileupload').bind('fileuploadchange', function (e, data) {
 			if (getTotalFilesExceeded()) {
@@ -320,23 +344,22 @@
 		});
 
         $('#fileupload').bind('fileuploaddone', function (e, data) {
-			console.log('fileuploaddone');
-            if (pendingList.length > 0) $('#retryFailed').show();
-            else $('#retryFailed').hide();
+		if (pendingList.length > 0) $('#retryFailed').show();
+		else $('#retryFailed').hide();
 
-            $("tr.template-download").each(function (index) {
-                console.log($(this).children('span.label-danger'));
-                if ($(this).find('span.label-danger').length == 0) {
-                    $(this).remove();
-                }
-            });
+		$("tr.template-download").each(function (index) {
+			console.log($(this).children('span.label-danger'));
+			if ($(this).find('span.label-danger').length == 0) {
+				$(this).remove();
+			}
+		});
 
-            totalArchivosSubidos++;
+		totalArchivosSubidos++;
 
-            if (totalArchivosSubidos == totalArchivosCargados) {
-                mostrarPopup();
-            }
-        });
+		if (totalArchivosSubidos == totalArchivosCargados && !capacidadExcedida) {
+			mostrarPopup();
+		}
+	});
 
         $('#retryFailed').click(function () {
 			console.log('retryFailed clicked');
