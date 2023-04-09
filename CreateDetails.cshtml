@@ -305,14 +305,6 @@
                 $('#btnUpload').attr('disabled', false);
 
         });
-		
-		$('#fileupload').on('custom.fileuploadchange', function (e) {
-			console.log('fileuploadchange');
-			if (getTotalFilesExceeded()) {
-				mostrarCapacidad();
-				e.preventDefault();
-			}
-		});
 
         $('#fileupload').bind('fileuploadchange', function (e, data) {
 			if (getTotalFilesExceeded()) {
@@ -400,7 +392,7 @@
         });
     }
 
-    var capacidadExcedida = '@Model.CapacidadExtendida' === 'True';
+    var capacidadExcedida = "@Model.CapacidadExtendida" === 'True';
 	console.log('Capacidad excedida:', capacidadExcedida);
 
 
