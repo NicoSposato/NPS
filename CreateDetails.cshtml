@@ -1,4 +1,4 @@
-﻿@model ElegiTusFotos.Models.ProyectoViewModel
+@model ElegiTusFotos.Models.ProyectoViewModel
 @using ElegiTusFotos.Models
 
 @{
@@ -327,7 +327,6 @@
         });
     }
 
-
     function mostrarPopup() {
         swal({
             title: "Procesamos las fotos correctamente",
@@ -386,4 +385,13 @@
             $('#mensajes').delay(1000).fadeOut("slow");
         }
     }
+
+    $('#btnUpload').on('click', function (e) {
+        e.preventDefault();
+        if (totalArchivosCargados <= @Model.GBDisponible) {
+            $('#fileupload').fileupload('send', { files: pendingList });
+        } else {
+            mostrarCapacidad();
+        }
+    });
 </script>
