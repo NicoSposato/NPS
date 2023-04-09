@@ -275,6 +275,18 @@
         mostrarMensaje(msj, "alert alert-info", 0);
     });
 
+    function getTotalFilesExceeded() {
+        var totalFilesAllowed = parseInt(window.totalArchivosPermitidos);
+        return totalArchivosCargados + totalArchivosSubidos > totalFilesAllowed;
+    }
+
+    $('#fileupload').bind('fileuploadsubmit', function (e, data) {
+        if (getTotalFilesExceeded()) {
+            data.abort();
+            mostrarCapacidad();
+        }
+    });
+
     function inicializarFileUpload() {
 
         $('#fileupload').bind('fileuploadfail', function (e, data) {
