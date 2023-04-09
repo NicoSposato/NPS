@@ -1,4 +1,4 @@
-@model ElegiTusFotos.Models.ProyectoViewModel
+﻿@model ElegiTusFotos.Models.ProyectoViewModel
 @using ElegiTusFotos.Models
 
 @{
@@ -266,7 +266,6 @@
     var totalArchivosSubidos = 0;
 
     $(document).ready(function () {
-        console.log('Documento listo');
         $('select[name=securitySelector]').val($("#ProyectoTipoSeguridadID").val());
         $('.selectpicker').prop('disabled', true);
         $('.selectpicker').selectpicker('refresh');
@@ -276,23 +275,10 @@
         mostrarMensaje(msj, "alert alert-info", 0);
     });
 
-    function getTotalFilesExceeded() {
-        var totalFilesAllowed = parseInt(window.totalArchivosPermitidos);
-        return totalArchivosCargados + totalArchivosSubidos > totalFilesAllowed;
-    }
-
-    $('#fileupload').bind('fileuploadsubmit', function (e, data) {
-        if (getTotalFilesExceeded()) {
-            data.abort();
-            mostrarCapacidad();
-        }
-    });
-
     function inicializarFileUpload() {
-        console.log('Inicializando FileUpload');
 
         $('#fileupload').bind('fileuploadfail', function (e, data) {
-            console.log('fileuploadfail');
+            console.log('Error!');
             errorData = data;
 
             if (errorData.files != undefined && errorData.files.length > 0) {
@@ -301,7 +287,6 @@
         });
 
         $('#fileupload').bind('fileuploadprocessdone', function (e, data) {
-            console.log('fileuploadprocessdone');
             totalArchivosCargados++;
             $('#fotosProcesadas').text(totalArchivosCargados);
 
@@ -311,7 +296,6 @@
         });
 
         $('#fileupload').bind('fileuploadchange', function (e, data) {
-            console.log('fileuploadchange');
             totalArchivosCargados = 0;
             totalArchivosSeleccionados = data.files.length;
             $('#procesoFotos').show();
@@ -320,7 +304,6 @@
         });
 
         $('#fileupload').bind('fileuploaddone', function (e, data) {
-            console.log('fileuploaddone');
             if (pendingList.length > 0) $('#retryFailed').show();
             else $('#retryFailed').hide();
 
@@ -339,14 +322,13 @@
         });
 
         $('#retryFailed').click(function () {
-            console.log('retryFailed clicked');
             pendingList.forEach(function (data) { data.submit(); });
             pendingList = [];
         });
     }
 
+
     function mostrarPopup() {
-        console.log('Mostrando Popup');
         swal({
             title: "Procesamos las fotos correctamente",
             text: "¿Que deseas hacer ahora?",
@@ -370,7 +352,6 @@
     }
 
     function mostrarCapacidad() {
-        console.log('Mostrando Capacidad');
         swal({
             title: "Tu plan llegó a su límite",
             text: "¿Deseas obtener mas GB?",
@@ -389,11 +370,9 @@
                 window.location = window.UrlHomeIndex;
             }
         });
-        console.log('Mostrando Capacidad');
     }
 
-    var capacidadExcedida = window.capacidadExcedida;
-    console.log('Capacidad excedida:', capacidadExcedida);
+    var capacidadExcedida = window.capacidadExtendida;
 
     if (capacidadExcedida == 'True') {
         mostrarCapacidad();
@@ -407,13 +386,4 @@
             $('#mensajes').delay(1000).fadeOut("slow");
         }
     }
-
-    $('#btnUpload').on('click', function (e) {
-        e.preventDefault();
-        if (totalArchivosCargados <= @Model.GBDisponible) {
-            $('#fileupload').fileupload('send', { files: pendingList });
-        } else {
-            mostrarCapacidad();
-        }
-    });
 </script>
