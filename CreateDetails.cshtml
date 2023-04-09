@@ -266,6 +266,7 @@
     var totalArchivosSubidos = 0;
 
     $(document).ready(function () {
+        console.log('Documento listo');
         $('select[name=securitySelector]').val($("#ProyectoTipoSeguridadID").val());
         $('.selectpicker').prop('disabled', true);
         $('.selectpicker').selectpicker('refresh');
@@ -288,6 +289,7 @@
     });
 
     function inicializarFileUpload() {
+        console.log('Inicializando FileUpload');
 
         $('#fileupload').bind('fileuploadfail', function (e, data) {
             console.log('Error!');
@@ -360,6 +362,7 @@
                 $('#guardarCont').attr('disabled', false);
             }
         });
+        console.log('Mostrando Popup');
     }
 
     function mostrarCapacidad() {
@@ -381,9 +384,11 @@
                 window.location = window.UrlHomeIndex;
             }
         });
+        console.log('Mostrando Capacidad');
     }
 
-    var capacidadExcedida = window.capacidadExtendida;
+    var capacidadExcedida = window.capacidadExcedida;
+    console.log('Capacidad excedida:', capacidadExcedida);
 
     if (capacidadExcedida == 'True') {
         mostrarCapacidad();
