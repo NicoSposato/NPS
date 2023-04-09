@@ -292,7 +292,7 @@
         console.log('Inicializando FileUpload');
 
         $('#fileupload').bind('fileuploadfail', function (e, data) {
-            console.log('Error!');
+            console.log('fileuploadfail');
             errorData = data;
 
             if (errorData.files != undefined && errorData.files.length > 0) {
@@ -301,6 +301,7 @@
         });
 
         $('#fileupload').bind('fileuploadprocessdone', function (e, data) {
+            console.log('fileuploadprocessdone');
             totalArchivosCargados++;
             $('#fotosProcesadas').text(totalArchivosCargados);
 
@@ -310,6 +311,7 @@
         });
 
         $('#fileupload').bind('fileuploadchange', function (e, data) {
+            console.log('fileuploadchange');
             totalArchivosCargados = 0;
             totalArchivosSeleccionados = data.files.length;
             $('#procesoFotos').show();
@@ -318,6 +320,7 @@
         });
 
         $('#fileupload').bind('fileuploaddone', function (e, data) {
+            console.log('fileuploaddone');
             if (pendingList.length > 0) $('#retryFailed').show();
             else $('#retryFailed').hide();
 
@@ -336,12 +339,14 @@
         });
 
         $('#retryFailed').click(function () {
+            console.log('retryFailed clicked');
             pendingList.forEach(function (data) { data.submit(); });
             pendingList = [];
         });
     }
 
     function mostrarPopup() {
+        console.log('Mostrando Popup');
         swal({
             title: "Procesamos las fotos correctamente",
             text: "¿Que deseas hacer ahora?",
@@ -362,10 +367,10 @@
                 $('#guardarCont').attr('disabled', false);
             }
         });
-        console.log('Mostrando Popup');
     }
 
     function mostrarCapacidad() {
+        console.log('Mostrando Capacidad');
         swal({
             title: "Tu plan llegó a su límite",
             text: "¿Deseas obtener mas GB?",
