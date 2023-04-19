@@ -1,0 +1,561 @@
+﻿@using Microsoft.AspNet.Identity
+@using ElegiTusFotos.Models
+
+@{
+    bool EsAdmin = ViewBag.EsAdmin;
+    bool EsEmpresario = ViewBag.EsEmpresario;
+    bool EsCliente = ViewBag.EsCliente;
+    string PermiteClickDerecho = System.Configuration.ConfigurationManager.AppSettings["PermitirClickDerecho"];
+}
+
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-65278894-1', 'auto');
+    ga('send', 'pageview');
+</script>
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width">
+    @*<meta name="viewport" content="width=device-width, initial-scale=1.0">*@
+    @*<meta name="viewport" content="width=1000">*@
+
+    <title>@ViewBag.Title - Elige Tus Fotos</title>
+
+
+    @Styles.Render("~/Content/metroOrange")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @*@Scripts.Render("~/bundles/metroTemplate")*@
+
+    @Styles.Render("~/Content/bootstrap.min.css")
+    @Styles.Render("~/Content/style.css")
+
+    <script>
+
+        //********** paths *************
+        if(@Json.Encode(ViewBag.EsAdmin))
+            var UrlHomeIndex = '@Url.Action("Index", "Home")';
+        else
+            var UrlHomeIndex = '@Url.Action("Index", "Proyecto")';
+
+        //********** ViewBag *************
+
+
+        //********** Sesiones *************
+
+
+    </script>
+
+    @RenderSection("scripts", false)
+    @RenderSection("styles", false)
+
+
+    <div class="container">
+        <div class="imgPhone" style="text-align:center;">
+            @if (User.Identity.IsAuthenticated && !EsAdmin)
+            {
+                if (ViewBag.PlanID != (int)Plan.state.DEMO)
+                {
+                    <img src="@ViewBag.LogoEmpresaUrl" alt="Logo" border="0" style="width:200px; height:57px;">
+                }
+                else
+                {
+                    <img src="@Url.Content("Content/img/logoDEMO.jpg")" alt="Logo" border="0" style="display:block; border:none; outline:none; text-decoration:none;width:200px; height:57px;">
+                }
+            }
+            else
+            {
+                <img src="@Url.Content("Content/img/Logo.jpg")" alt="Logo" border="0" style="display:block; border:none; outline:none; text-decoration:none;width:200px; height:57px;">
+            }
+        </div>
+        <div class="row showHeader">
+            <div class="col-sm-5">
+                <div class="logo left">
+
+                    <ul class="nav navbar-nav navbar-left">
+
+
+                        @if (User.Identity.IsAuthenticated && !EsAdmin)
+                        {
+                            <li>
+
+                                @if (ViewBag.PlanID != (int)Plan.state.DEMO)
+                                {
+                                    <img src="@ViewBag.LogoEmpresaUrl" class="img-responsive imgEmpresa" alt="Logo" border="0" style="">
+                                }
+                                else
+                                {
+                                    <img src="@Url.Content("https://wetf.s3.amazonaws.com/static/img/logoDEMO.jpg")" class="img-responsive" alt="Logo" border="0" style="display:block; border:none; outline:none; text-decoration:none;width:200px; height:57px;">
+                                }
+                                @*<img src="" title="Logo" style="width:150px; height:57px;" />*@
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <img src="@Url.Content("https://wetf.s3.amazonaws.com/static/img/Logo.jpg")" class="img-responsive" alt="Logo" border="0" style="display:block; border:none; outline:none; text-decoration:none;width:200px; height:57px;">
+                            </li>
+                        }
+                        @if (User.Identity.IsAuthenticated && EsCliente)
+                        {
+                            <li>
+                                <a href="@Url.Action("Index", "Home")" class="line-text">Visor</a>
+                            </li>
+                        }
+                        @if (User.Identity.IsAuthenticated && EsEmpresario)
+                        {
+                            <li>
+                                <a href="@Url.Action("Index", "Proyecto", new { controller = "Proyecto", userId = User.Identity.GetUserId() })" class="line-text">Mis Proyectos</a>
+                            </li>
+                        }
+
+                    </ul>
+
+                </div>
+            </div>
+
+            <div class="col-sm-2">
+                <ul class="nav navbar-nav navbar-right">
+                    @if (User.Identity.IsAuthenticated && EsEmpresario)
+                    {
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle line-text" data-toggle="dropdown" id="configMenuBtn">Configuración <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Mi Cuenta", "IndexMenu", "Cuenta")</li>
+                                <li>@Html.ActionLink("Mis Clientes", "Index", "Cliente")</li>
+                                <li>@Html.ActionLink("Mis Productos", "Index", "Producto")</li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="col-sm-5 col-md-4">
+                @Html.Partial("_LoginPartial")
+            </div>
+
+        </div>
+    </div>
+    @*DESCOMENTAR si queres probar resoluciones.*@
+    @*<div id="prueba">
+            blockresol test
+        </div>*@
+</head>
+<body oncontextmenu='return @(string.IsNullOrEmpty(PermiteClickDerecho) || PermiteClickDerecho != "true" ? "false" : "true")'>
+    @if (Request.IsAuthenticated)
+    {
+        <div class="navbar bs-docs-nav" id="navbar-op" role="banner" style="background-color:white; border-top-color:#e8b99f !important;">
+            <div class="container" style="padding:0px;">
+                <div class="navbar-header navBarCarritoMobile">
+
+                    @if (User.Identity.IsAuthenticated && EsCliente)
+                    {
+                        <div class="col-xs-9" id="navCarritoMobile">
+                            <div class="col-xs-9" style="padding:10px 10px;font-size:12px !important;">@ViewBag.CantidadPedidos Compras por finalizar </div>
+                            <div class="col-xs-3">
+                                <a id="carritoActionElement" href="@Url.Action("PantallaCarrito", "Pedido")" class="pull-right" style="padding: 12px 5px 7px 10px;margin-left:auto;margin-right:auto;display:block;">
+                                    <img src="https://wetf.s3.amazonaws.com/static/img/ICO+-+Carrito.png" width="20">
+                                </a>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="col-xs-3 pull-right">
+                        <button type="button" class="navbar-toggle pull-right" style="width:100%;max-width:45px;" data-toggle="collapse" data-target=".bs-navbar-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                    </div>
+                </div>
+                <nav class="collapse navbar-collapse bs-navbar-collapse backgroundNav" role="navigation" style="padding:0; overflow: initial !important;">
+                    <div class="container showNavBar">
+                        <div class="row">
+
+                            @*<div class="col-xs-3 col-sm-12 pull-left" style="border-bottom:1px;" >*@
+
+                            @if (User.Identity.IsAuthenticated && EsCliente)
+                            {
+                                <div class="col-xs-3 col-sm-12 pull-left" style="border-bottom:1px;">
+                                    <div class="itemShowNavBar">
+                                        <a href="@Url.Action("Index", "Home")">Visor</a>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (User.Identity.IsAuthenticated && EsEmpresario)
+                            {
+                                <div class="col-xs-6 col-sm-12 pull-left" style="border-bottom:1px;">
+                                    <div class="itemShowNavBar"
+                                         style="
+                                                padding-top: 20px;
+                                                padding-left: 20px;">
+                                        <a href="@Url.Action("Index", "Proyecto", new { controller = "Proyecto", userId = User.Identity.GetUserId() })">Mis Proyectos</a>
+                                    </div>
+                                </div>
+                            }
+
+
+                            @if (User.Identity.IsAuthenticated && EsEmpresario)
+                            {
+                                <div class="col-xs-6 col-sm-12 pull-left"
+                                     style="
+                                            padding-top: 20px;">
+                                    <div class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="configMenuBtn">Configuración <b class="caret"></b></a>
+                                        <ul class="dropdown-menu backgroundNav">
+                                            <li>@Html.ActionLink("Mi Cuenta", "IndexMenu", "Cuenta")</li>
+                                            <li>@Html.ActionLink("Mis Clientes", "Index", "Cliente")</li>
+                                            <li>@Html.ActionLink("Mis Productos", "Index", "Producto")</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            }
+
+                            @*<div class="">
+                                    @Html.Partial("_LoginPartial")
+                                </div>*@
+
+
+                        </div>
+                    </div>
+
+
+                    <ul class="nav navbar-nav">
+                        @if (User.Identity.IsAuthenticated && EsEmpresario)
+                        {
+                            if (ViewBag.PlanNombre != "" && ViewBag.PlanID == 1)
+                            {
+                                <div class="showNavBar">
+                                    <a data-toggle="tooltip" data-placement="bottom" title="Mejorá tu cuenta con PREMIUM" href="/Cuenta/Index#titleCapacity" class="btn-up-20gb " style="color: white !important;line-height:1.85em">Sube a 20GB</a>
+                                </div>
+                            }
+                        }
+                        <ul class="nav navbar-nav navbar-left" id="visorSelector">
+                        </ul>
+
+                        <li id="ubicacionLi" style="width:100%;line-height:3.5">
+                        </li>
+
+                        @if (User.Identity.IsAuthenticated && EsAdmin)
+                        {
+                            <li><a href="@Url.Action("Index", "Home")">Home</a></li>
+                            <li>@Html.ActionLink("Empresas", "Index", "Empresa")</li>
+                            <li>@Html.ActionLink("Planes", "Index", "Plan")</li>
+                            <li>@Html.ActionLink("Usuarios", "Index", "UsersAdmin")</li>
+                            <li>@Html.ActionLink("Categorias", "Index", "Categoria")</li>
+                            <li>@Html.ActionLink("Productos", "Index", "Producto")</li>
+                            <li>@Html.ActionLink("Medidas", "Index", "Medida")</li>
+                        }
+                    </ul>
+
+                    <ul class="nav navbar-nav navbar-right showHeader" id="navCarrito">
+                        @if (User.Identity.IsAuthenticated && EsCliente)
+                        {
+                            <li><div style="line-height:3.5;padding:0px 10px;">@ViewBag.CantidadPedidos Compras por finalizar </div></li>
+                            <li>
+                                <a id="carritoActionElement2" href="@Url.Action("PantallaCarrito", "Pedido")" class="pull-right" style="padding: 7px 10px 7px 10px;">
+                                    <img src="https://wetf.s3.amazonaws.com/static/img/ICO+-+Carrito.png" width="39">
+                                </a>
+                            </li>
+                        }
+                    </ul>
+
+
+                    @if (User.Identity.IsAuthenticated && EsCliente)
+                    {
+                        <ul class="nav navbar-nav navbar-right bloqueAyuda-desk" onclick="mostrarPopupAyuda()" id="bloqueAyuda">
+                            <li>
+                                @*<a href="#" id="lnkAyuda" style="line-height:1.85">Ayuda</a>*@
+                                <img src="https://wetf.s3.amazonaws.com/static/img/ICO+-+Ayuda.png" class="pointer" width="30" />
+                            </li>
+                        </ul>
+                        <div class="row ptb-5 bloqueAyuda-mobile pointer" onclick="mostrarPopupAyuda()" id="bloqueAyuda">
+                            <div class="col-xs-4 col-xs-offset-5 pl-0">
+                                <div class="bg-help-btn">
+                                    <img src="https://wetf.s3.amazonaws.com/static/img/ICO+-+Ayuda.png" width="30" style="margin-left:30%;" />
+                                </div>
+                            </div>
+                            @*<a href="#" id="lnkAyuda" style="line-height:1.85">Ayuda</a>*@
+                        </div>
+                    }
+
+
+                    @if (ViewBag.PlanNombre != "" && ViewBag.PlanID == 1)
+                    {
+                        <ul class="nav navbar-nav navbar-right showHeader" id="bloqueAyuda2">
+                            <li style="height:49px;">
+                                <a data-toggle="tooltip" data-placement="bottom" title="Mejorá tu cuenta con PREMIUM" href="/Cuenta/Index#titleCapacity" class="btn-up-20gb line-text" style="color: white !important;margin-top:2px !important;">Sube a 20GB</a>
+                            </li>
+                        </ul>
+                    }
+                    <ul class="nav navbar-nav navbar-left showHeader" id="ubicacionUl" style="list-style:none; white-space: nowrap !important;">
+                    </ul>
+
+                </nav>
+            </div>
+        </div>
+
+    }
+
+    @*<div id="bg-project-panel" class="bg-project-panel-gray">*@
+    <div id="bg-project-panel" class="bg-project-panel-gray">
+        <div class="container body-content">
+            @RenderBody()
+            <div id="hr"><hr /></div>
+        </div>
+    </div>
+
+    @if (User.Identity.IsAuthenticated && EsCliente)
+    {
+        <div class="social-links">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p class="big">
+                            <span>Seguinos en</span>
+                            @if (@ViewBag.linkFacebook != null)
+                            {<a href="@ViewBag.linkFacebook" target="_blank"><i class="fa fa-facebook"></i>Facebook</a>}
+                            @if (@ViewBag.linkTwitter != null)
+                            {<a href="@ViewBag.linkTwitter" target="_blank"><i class="fa fa-twitter"></i>Twitter</a>}
+                            @if (@ViewBag.linkGooglePlus != null)
+                            {<a href="@ViewBag.linkGooglePlus" target="_blank"><i class="fa fa-google-plus"></i>Google Plus</a>}
+                            @if (@ViewBag.linkInstagram != null)
+                            {<a href="@ViewBag.linkInstagram" target="_blank"><i class="fa fa-instagram"></i>Instagram</a>}
+                            @if (@ViewBag.linkPinterest != null)
+                            {<a href="@ViewBag.linkPinterest" target="_blank"><i class="fa fa-pinterest-p"></i>Pinterest</a>}
+                            @if (@ViewBag.linkWeb != null)
+                            {<a href="@ViewBag.linkWeb" target="_blank"><i class="glyphicon glyphicon-globe"></i>Sitio Web</a>}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <footer>
+        @if (ViewBag.MostrarPlanFooter != null && ViewBag.MostrarPlanFooter)
+        {
+            <div class="">
+                <div class="row">
+                    <div class="col-md-12" id="pie">
+                        <div class="centrarTexto" style="margin-left: 10px;">
+                            CAPACIDAD DISPONIBLE: <span>@String.Format("{0:0.0##}", ViewBag.PlanCapacidadDisponible)</span>GB (<span>@ViewBag.PlanCapacidadDisponiblePct.ToString("N2")</span>%) de <span>@ViewBag.PlanCapacidadTotal</span>GB |
+                            <span>@ViewBag.PlanNombre</span>&nbsp;&nbsp; | @Html.ActionLink("Administrar", "Index", "Cuenta", routeValues: null, htmlAttributes: new { title = "Administrar" })
+
+                            <div id="navFooter" class="btn btn-lg btn-see-more" style="float: right">
+                                <a href="#" style="text-decoration:none;" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">Ver m&aacute;s <i class="glyphicon glyphicon-chevron-down"></i></a>
+                            </div>
+                        </div>
+                        <div class="cbp-hrsub padding-sides-50">
+                            <div class="cbp-hrsub-inner">
+                                <div class="col-md-4">
+                                    <h5 class="bold">Acerca de</h5>
+                                    <ul>
+                                        <li></li>
+                                        <li><a href="@Url.Action("Index", "Home")">Elige Tus Fotos</a></li>
+                                        <li>@Html.ActionLink("Club Soy Fotografo", "Enconstruccion")</li>
+                                        <!-- ... -->
+                                    </ul>
+                                </div>
+                                <div class="col-md-3">
+                                    <h5 class="bold">Ayuda</h5>
+                                    <ul>
+                                        <li></li>
+                                        <li><a href="http://www.eligetusfotos.co/centro-de-conocimiento.html">¿Qui&eacute;n ve mis fotos?</a></li>
+                                        <li><a href="http://www.eligetusfotos.co/centro-de-conocimiento.html">Cargar fotos en mi proyecto</a></li>
+                                        <li><a href="http://www.eligetusfotos.co/centro-de-conocimiento.html">Personalizar mi cuenta</a></li>
+                                        <li><a href="http://www.eligetusfotos.co/contact.html">Resolucion de problemas</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-3">
+                                    <h5 class="bold">Mi cuenta</h5>
+                                    <ul>
+                                        <li></li>
+                                        <li><a href="@((ViewBag.PlanID == 1) ? @Url.Action("Index", "Cuenta") + "#titleCapacity" : Url.Action("Redes", "Empresa"))">Mis redes</a></li>
+                                        <li><a href="@((ViewBag.PlanID == 1) ? @Url.Action("Index", "Cuenta") + "#titleCapacity" : Url.Action("Edit", "Empresa"))">Logo y Marca de Agua</a></li>
+                                        <li>@Html.ActionLink("Vender Fotos", "Enconstruccion")></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5 class="bold">Redes sociales</h5>
+                                    <ul>
+                                        <li></li>
+                                        <li><a href="http://www.twitter.com/EligeTusFotos" target="_blank"><i class="fa fa-twitter"></i>&nbsp;Twitter</a></li>
+                                        <li><a href="http://www.facebook.com/EligeTusFotos" target="_blank"><i class="fa fa-facebook"></i>&nbsp;Facebook</a></li>
+                                        <li><a href="http://www.instagram.com/eligetusfotos" target="_blank"><i class="fa fa-instagram"></i>&nbsp;Instagram</a></li>
+                                        <li><a href="http://www.youtube.com/c/EligetusfotosAr_oficial" target="_blank"><i class="glyphicon glyphicon-play"></i>&nbsp;Youtube</a></li>
+                                    </ul>
+                                </div><!-- /cbp-hrsub-inner -->
+                            </div><!-- /cbp-hrsub -->
+                        </div>
+                    </div>
+                    <span class="centrarTexto" style="padding-left: 25%; float: left">
+                        &copy; 2015 - @DateTime.Now.Year Elige Tus Fotos &nbsp;&nbsp;&nbsp; @Html.ActionLink("Condiciones", "Enconstruccion")&nbsp;&nbsp;|&nbsp;&nbsp;@Html.ActionLink("Privacidad", "Enconstruccion")&nbsp;&nbsp;|&nbsp;&nbsp;@Html.ActionLink("Contanos tu experiencia", "Enconstruccion")
+                    </span>
+                </div>
+
+            </div>
+        }
+        else
+        {
+            <div class="container">
+                <p>
+                    <a href="@Url.Content("~/")">
+                        Acerca de Elige Tus Fotos &copy;2015 -
+                        <script>var f = new Date(); document.write(f.getFullYear());</script>
+                    </a>
+                </p>
+            </div>
+        }
+    </footer>
+</body>
+</html>
+<script language="javascript">
+    var cond = false;
+    var values = window.location.href.split('?');
+
+    $("#navFooter").on('click', function () {
+        $(".cbp-hrsub").toggle();
+        cond = !cond;
+        if (cond) {
+            $("#navFooter i").removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+        }
+        else {
+            $("#navFooter i").removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+        }
+    });
+
+    $(document).ready(function () {
+        if (values != null) {
+            $("#carritoActionElement").prop("href", $("#carritoActionElement").attr('href') + "?" + values[1]);
+            $("#carritoActionElement2").prop("href", $("#carritoActionElement2").attr('href') + "?" + values[1]);
+        }
+
+
+
+    });
+
+
+    function mostrarPopupAyuda() {
+        var id = 'PopupHelp';
+        $('#' + id).remove();
+        var html = getPopUpHelp();
+        $('body').append($(html));
+        $('#' + id).modal('show');
+
+        if ($(window).width() < 992) {
+            showHand("#PopupHelp");
+            hideHand();
+        }
+
+
+    }
+
+    function getPopUpHelp() {
+
+        var id = 'PopupHelp';
+        var html = '';
+
+        html += '<div id="' + id + '" style="width:100%;overflow-y:hidden;" class="modal fade" role="dialog" aria-hidden="true">';
+        html += '<div class="row">';
+        html += '<div class="col-xs-12 fondoAyuda img-responsive style="box-shadow:0px 5px 5px #00000059;">';
+        html += '<div class="row modal-title">';
+        html += '<div class="col-xs-12">';
+        html += '<button type="button" class="close custom-close help" data-dismiss="modal">';
+        html += '<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>';
+        html += '</button';
+        html += '</div>';
+        html += '</div>';
+        html += '\t\t</div>';
+
+        html += '<div class="col-xs-12 imagenFondoAyuda" style="height:100%;">';
+        html += '<a><button type="button" data-dismiss="modal" class="btn-popup-ayuda-continuar close custom-close"></button></a>';
+        html += '</div>';
+
+        html += '<div class="col-xs-12 imagenFondoAyudaMobile" onclick="hideHand()" style="height:100%;">';
+
+        html += '<div class="rowsIndicator">';
+        html += '<div style="float:left;"><i class="fa fa-arrow-left icon-back-help" ></i></div>';
+        html += '<div style="float:right;"><i class="fa fa-arrow-right icon-back-help" ></i></div>';
+        html += '</div>';
+
+        html += '<div class="headerPopUpHelp">';
+        html += '<div class="headerText">';
+        html += '<div style="text-align:center;">Ver y elegir tus fotos, es fácil y ¡Emocionante! </br> Házlo cómodo y seguro.</div>';
+        html += '</div>';
+        html += '</div>';
+
+        html += '<div class="row conteinerPopUpHelp" id="containerImageHelp">';
+        html += '<div class="col-xs-12" >';
+        html += '<img id="slide-img" class="slide-block" src="https://wetf.s3.amazonaws.com/static/img/helpSliders.jpg" >'
+        html += '</div>';
+        html += '</div>';
+
+        html += '<div class="row footerPopUpHelp">';
+        html += '<div class="col-xs-12">';
+        html += '<img id="img-footer" class="imgs-foots" src="https://wetf.s3.amazonaws.com/static/img/footer-img.jpg" >'
+        html += '</div>';
+        html += '</div>';
+
+        html += '</div>';
+
+        html += '</div>';
+        html += '</div>';
+        return html;
+    }
+
+    function showHand(element, customClass, postAction, customWidth, disableScroll) {
+        var $element = $(element);
+
+        var style = 'width:' + (customWidth ? customWidth : $element.innerWidth() + 'px');
+        style += ';height:' + $element.innerHeight() + 'px';
+
+        var customClass = customClass || '';
+        $element.append('<div class="hand-ajax ' + customClass + '" style="' + style + '"><img id="hand-swype" class="swype-effect" src="https://wetf.s3.amazonaws.com/static/img/swype-effect-icon.gif" ></div>');
+        if (postAction != undefined & postAction != null) {
+            postAction();
+        }
+
+        if (disableScroll) {
+            $('body').addClass('disable-scroll');
+        }
+    }
+
+    function hideHand() {
+        $(".hand-ajax").delay(1500).fadeOut();
+        $('body').removeClass('disable-scroll');
+    }
+
+    function MostrarModalWait() {
+        var id = '#modalWait';
+        $(id).remove();
+
+        var html = '<div class="modal fade" id="modalWait" role="dialog" data-backdrop="static" data-keyboard="false" href="#">';
+        html += '<div class="modal-dialog modal-sm backPopUp">';
+        html += '<div class"modal-body">';
+        html += '<div class="row">';
+        html += '<div class="col-12 text-center">';
+        html += '<br><br><br><i class="fa fa-spinner fa-pulse fa-4x fa-fw"></i><br><br>';
+        html += '<span>Un momento por favor...</span>';
+        html += '</div></div></div></div></div>';
+
+        $('body').append($(html));
+        $(id).modal('show');
+    }
+
+    function OcultarModalWait() {
+        $('#modalWait').modal('hide');
+    }
+
+</script>
